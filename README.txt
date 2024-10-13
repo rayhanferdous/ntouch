@@ -1,13 +1,4 @@
-run api server
-cd ntouch/cors-proxy-server
-npm install
-node server.mjs
+host it on live server htdocs or public folder
+or test is on local server using xammp and move this file inside the htdocs folder.
 
-run frontend from ntouch
-
-in the root directory run those command:
-npm install -g http-server
-http-server -p 8000
-
-visit now
-
+and visit: http://localhost/ntouch/
