@@ -1,5 +1,6 @@
 run api server
 cd ntouch/cors-proxy-server
+npm install
 node server.mjs
 
 run frontend from ntouch
