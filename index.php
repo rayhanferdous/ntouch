@@ -14,6 +14,7 @@
             opacity: 0; /* Initially hidden */
         }
         .accordion-content.show {
+            max-height: 1000px; /* Set a large max-height to allow content to expand */
             opacity: 1; /* Make visible */
         }
     </style>
@@ -69,7 +70,7 @@
                 const header = document.createElement("button");
                 header.className = "w-full text-left px-4 py-3 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring focus:ring-blue-300 transition duration-200 ease-in-out";
                 header.innerText = menu.name;
-                header.setAttribute("aria-expanded", "false");
+                header.setAttribute("aria-expanded", "true");
                 header.setAttribute("aria-controls", `content-${menu.id}`);
 
                 header.onclick = () => {
@@ -77,23 +78,14 @@
                     const isOpen = content.classList.toggle("show");
                     header.setAttribute("aria-expanded", isOpen);
 
-                    // Open or close all child accordion contents based on main accordion state
+                    // Toggle content visibility
                     if (isOpen) {
-                        const childContents = content.querySelectorAll('.accordion-content');
-                        childContents.forEach(child => {
-                            child.classList.add("show");
-                            child.style.maxHeight = `${child.scrollHeight}px`; // Expand all children
-                            child.style.opacity = "1"; // Ensure visibility
-                        });
+                        content.style.maxHeight = `${content.scrollHeight}px`;
+                        content.style.opacity = "1"; // Ensure visibility
                     } else {
-                        // Close all child accordion contents
-                        closeAllSubAccordions(content);
-                        content.style.maxHeight = "0"; // Collapse main accordion
+                        content.style.maxHeight = "0"; // Collapse
                         content.style.opacity = "0"; // Fade out
                     }
-
-                    // Update the parent accordion's max-height based on its children
-                    updateParentHeight(categoryDiv);
                 };
 
                 categoryDiv.appendChild(header);
@@ -101,14 +93,14 @@
                 // Create the accordion content
                 const contentDiv = document.createElement("div");
                 contentDiv.id = `content-${menu.id}`;
-                contentDiv.className = "accordion-content";
+                contentDiv.className = "accordion-content show"; // Initially show
 
                 menu.categories.forEach((category) => {
                     // Create category header
                     const categoryHeader = document.createElement("h3");
-                    categoryHeader.className = "font-semibold mt-2 text-lg text-gray-800 w-full block px-4 py-2 bg-gray-100 cursor-pointer";
+                    categoryHeader.className = "font-semibold mt-2 text-lg text-gray-800 w-full block px-4 py-2 bg-gray-100 cursor-pointer show"; // Initially show
                     categoryHeader.innerText = category.name;
-                    categoryHeader.setAttribute("aria-expanded", "false");
+                    categoryHeader.setAttribute("aria-expanded", "true");
                     categoryHeader.setAttribute("aria-controls", `cat-content-${category.id}`);
 
                     categoryHeader.onclick = () => {
@@ -116,27 +108,13 @@
                         const isCatOpen = catContent.classList.toggle("show");
                         categoryHeader.setAttribute("aria-expanded", isCatOpen);
 
-                        // If this child accordion is opened, close other child accordions
                         if (isCatOpen) {
-                            const siblingContents = contentDiv.querySelectorAll('.accordion-content');
-                            siblingContents.forEach(sibling => {
-                                if (sibling !== catContent && sibling.classList.contains('show')) {
-                                    sibling.classList.remove('show');
-                                    sibling.style.maxHeight = '0'; // Collapse
-                                    sibling.style.opacity = '0'; // Fade out
-                                }
-                            });
-
-                            // Set max-height for the opened content
                             catContent.style.maxHeight = `${catContent.scrollHeight}px`;
                             catContent.style.opacity = "1"; // Ensure visibility
                         } else {
                             catContent.style.maxHeight = "0"; // Collapse
                             catContent.style.opacity = "0"; // Fade out
                         }
-
-                        // Update the parent accordion's max-height based on its children
-                        updateParentHeight(categoryDiv);
                     };
 
                     contentDiv.appendChild(categoryHeader);
@@ -144,7 +122,7 @@
                     // Create collapsible content for each category
                     const catContentDiv = document.createElement("div");
                     catContentDiv.id = `cat-content-${category.id}`;
-                    catContentDiv.className = "accordion-content";
+                    catContentDiv.className = "accordion-content show"; // Initially show
 
                     // Grid for items
                     const itemGrid = document.createElement("div");
@@ -184,31 +162,6 @@
 
                 categoryDiv.appendChild(contentDiv);
                 accordionDiv.appendChild(categoryDiv);
-            });
-        }
-
-        // Function to update the max-height of the parent accordion
-        function updateParentHeight(parent) {
-            const childContents = parent.querySelectorAll('.accordion-content');
-            let totalHeight = 0;
-
-            childContents.forEach(content => {
-                if (content.classList.contains('show')) {
-                    totalHeight += content.scrollHeight;
-                }
-            });
-
-            const mainContent = parent.querySelector('.accordion-content');
-            mainContent.style.maxHeight = totalHeight > 0 ? `${totalHeight}px` : '0';
-        }
-
-        // Function to close all sub-accordions within a given parent
-        function closeAllSubAccordions(parentContent) {
-            const subAccordions = parentContent.querySelectorAll('.accordion-content.show');
-            subAccordions.forEach(sub => {
-                sub.classList.remove('show');
-                sub.style.maxHeight = '0'; // Collapse
-                sub.style.opacity = '0'; // Fade out
             });
         }
 
